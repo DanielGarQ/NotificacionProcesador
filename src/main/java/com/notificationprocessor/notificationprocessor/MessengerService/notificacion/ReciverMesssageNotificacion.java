@@ -24,15 +24,16 @@ public class ReciverMesssageNotificacion {
     }
 
 
-    @RabbitListener(queues = "notifiacion.to.processor.crear")
+    @RabbitListener(queues = "${notificacion.recibir.queue.name}")
     public void receiveMessageCrearNotificacion(String message) {
         try {
+            System.out.println(obtenerObjetoDeMensaje(message).get());
             notificacionService.saveNotificacion(obtenerObjetoDeMensaje(message).get());
         } catch (Exception e) {
             System.out.println(e);
         }
     }
-    @RabbitListener(queues = "notifiacion.to.processor.consultar")
+   // @RabbitListener(queues = "notifiacion.to.processor.consultar")
     public void receiveMessageConsultarNotificacion(String message) {
        var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {

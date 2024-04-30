@@ -22,7 +22,7 @@ public class ReciverMessageBuzonNotificacion {
         this.mapperJsonObjeto = mapperJsonObjeto;
     }
 
-    @RabbitListener(queues = "")
+   // @RabbitListener(queues = "")
     public void receiveMessageProcessClient(String message) {
         try {
 

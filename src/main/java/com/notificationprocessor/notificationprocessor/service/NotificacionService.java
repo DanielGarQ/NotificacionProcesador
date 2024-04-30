@@ -47,10 +47,10 @@ public class NotificacionService {
         return toDomain(entity);
     }
 
-    public UUID saveNotificacion(NotificacionDomain notificacion){
+    public void saveNotificacion(NotificacionDomain notificacion){
         var autor = new PersonaEntity(notificacion.getAutor().getIdentificador(), notificacion.getAutor().getPrimerNombre(), notificacion.getAutor().getSegundoNombre(), notificacion.getAutor().getPrimerApellido(), notificacion.getAutor().getSegundoApellido(), notificacion.getAutor().getCorreoElectronico());
         var entity = new NotificacionEntity(notificacion.getIdentificador(), autor, notificacion.getTitulo(), notificacion.getContenido(), notificacion.getFechaCreacion(), notificacion.getEstado(), notificacion.getFechaProgramada(), notificacion.getTipoEntrega(), notificacion.getDestinatario().stream().map(new NotificacionService()::personaToEntity).toList());
-        return notificacionRepository.save(entity).getIdentificador();
+        notificacionRepository.save(entity);
     }
 
     public void deleteNotificacion(UUID identificador){
