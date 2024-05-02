@@ -3,6 +3,7 @@ package com.notificationprocessor.notificationprocessor.MessengerService.notific
 
 
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjeto;
+import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjetoJackson;
 import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
 import com.notificationprocessor.notificationprocessor.service.NotificacionService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,16 +18,17 @@ public class ReciverMesssageNotificacion {
     private final NotificacionService notificacionService = new NotificacionService();
 
     @Autowired
-    private final MapperJsonObjeto mapperJsonObjeto;
+    private final MapperJsonObjetoJackson mapperJsonObjeto;
 
-    public ReciverMesssageNotificacion(MapperJsonObjeto mapperJsonObjeto) {
+    public ReciverMesssageNotificacion(MapperJsonObjetoJackson mapperJsonObjeto) {
         this.mapperJsonObjeto = mapperJsonObjeto;
     }
 
 
-    @RabbitListener(queues = "${notificacion.recibir.queue.name}")
+    @RabbitListener(queues = "colaNotificacionCrear")
     public void receiveMessageCrearNotificacion(String message) {
         try {
+            System.out.println(message);
             System.out.println(obtenerObjetoDeMensaje(message).get());
             notificacionService.saveNotificacion(obtenerObjetoDeMensaje(message).get());
         } catch (Exception e) {

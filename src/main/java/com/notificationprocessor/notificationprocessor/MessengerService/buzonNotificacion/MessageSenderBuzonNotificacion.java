@@ -1,7 +1,6 @@
 package com.notificationprocessor.notificationprocessor.MessengerService.buzonNotificacion;
 
 
-import com.notificationprocessor.notificationprocessor.config.BuzonNotificacionQueueConfig;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.MessageSender;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjeto;
 import com.notificationprocessor.notificationprocessor.domain.BuzonNotificacionDomain;
@@ -22,20 +21,16 @@ public class MessageSenderBuzonNotificacion implements MessageSender<BuzonNotifi
     @Autowired
     private final MapperJsonObjeto mapperJsonObjeto;
 
-    @Autowired
-    private final BuzonNotificacionQueueConfig buzonNotificacionQueueConfig;
-
-
-    public MessageSenderBuzonNotificacion(RabbitTemplate rabbitTemplate, MapperJsonObjeto mapperJsonObjeto, BuzonNotificacionQueueConfig buzonNotificacionQueueConfig) {
+    public MessageSenderBuzonNotificacion(RabbitTemplate rabbitTemplate, MapperJsonObjeto mapperJsonObjeto) {
         this.rabbitTemplate = rabbitTemplate;
         this.mapperJsonObjeto = mapperJsonObjeto;
-        this.buzonNotificacionQueueConfig = buzonNotificacionQueueConfig;
     }
 
-    private MessageProperties generarPropiedadesMensaje(String idMessageSender ) {
+
+    private MessageProperties generarPropiedadesMensaje(Long idMensajeEmisor ) {
         return MessagePropertiesBuilder.newInstance()
                 .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-                .setHeader("idMensaje", idMessageSender)
+                .setHeader("idMensaje", String.valueOf(idMensajeEmisor))
                 .build();
     }
 
@@ -48,15 +43,18 @@ public class MessageSenderBuzonNotificacion implements MessageSender<BuzonNotifi
                 .build());
 
     }
+
+
+
     @Override
-    public void execute(BuzonNotificacionDomain message, String idMessage) {
-        MessageProperties propiedadesMensaje = generarPropiedadesMensaje(idMessage);
+    public void execute(BuzonNotificacionDomain message, String exchange, String routingKey, String idMessage) {
+        MessageProperties propiedadesMensaje = generarPropiedadesMensaje(Long.valueOf(idMessage));
 
         Optional<Message> cuerpoMensaje = obtenerCuerpoMensaje(message, propiedadesMensaje);
         if (!cuerpoMensaje.isPresent()) {
             return;
         }
-        rabbitTemplate.convertAndSend(buzonNotificacionQueueConfig.getExchangeName(), buzonNotificacionQueueConfig.getRoutingKeyName(), cuerpoMensaje.get());
-    }
 
+        rabbitTemplate.convertAndSend(exchange, routingKey, cuerpoMensaje.get());
+    }
 }

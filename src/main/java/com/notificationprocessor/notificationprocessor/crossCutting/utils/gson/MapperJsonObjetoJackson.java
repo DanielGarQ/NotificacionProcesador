@@ -42,7 +42,9 @@ public class MapperJsonObjetoJackson implements MapperJsonObjeto {
                     .registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
                         @Override
                         public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                            return LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                            LocalDateTime prueba = LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                            System.out.println(prueba);
+                            return prueba;
                         }
                     })
                     .create();

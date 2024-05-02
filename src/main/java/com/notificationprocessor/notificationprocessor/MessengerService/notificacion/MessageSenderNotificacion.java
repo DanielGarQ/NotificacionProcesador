@@ -1,11 +1,9 @@
 package com.notificationprocessor.notificationprocessor.MessengerService.notificacion;
 
 
-import com.notificationprocessor.notificationprocessor.config.NotificacionQueueConfig;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.MessageSender;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjeto;
 import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageProperties;
@@ -24,20 +22,16 @@ public class MessageSenderNotificacion implements MessageSender<NotificacionDoma
     @Autowired
     private final MapperJsonObjeto mapperJsonObjeto;
 
-    @Autowired
-    private final NotificacionQueueConfig notificacionQueueConfig;
-
-
-    public MessageSenderNotificacion(RabbitTemplate rabbitTemplate, MapperJsonObjeto mapperJsonObjeto, NotificacionQueueConfig notificacionQueueConfig) {
+    public MessageSenderNotificacion(RabbitTemplate rabbitTemplate, MapperJsonObjeto mapperJsonObjeto) {
         this.rabbitTemplate = rabbitTemplate;
         this.mapperJsonObjeto = mapperJsonObjeto;
-        this.notificacionQueueConfig = notificacionQueueConfig;
     }
 
-    private MessageProperties generarPropiedadesMensaje(String idMessageSender ) {
+
+    private MessageProperties generarPropiedadesMensaje(Long idMensajeEmisor ) {
         return MessagePropertiesBuilder.newInstance()
                 .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-                .setHeader("idMensaje", idMessageSender)
+                .setHeader("idMensaje", String.valueOf(idMensajeEmisor))
                 .build();
     }
 
@@ -51,15 +45,18 @@ public class MessageSenderNotificacion implements MessageSender<NotificacionDoma
 
     }
 
+
+
+
     @Override
-    public void execute(NotificacionDomain message, String idMessage) {
-        MessageProperties propiedadesMensaje = generarPropiedadesMensaje(idMessage);
+    public void execute(NotificacionDomain message, String exchange, String routingKey, String idMessage) {
+        MessageProperties propiedadesMensaje = generarPropiedadesMensaje(Long.valueOf(idMessage));
 
         Optional<Message> cuerpoMensaje = obtenerCuerpoMensaje(message, propiedadesMensaje);
         if (!cuerpoMensaje.isPresent()) {
             return;
         }
 
-        rabbitTemplate.convertAndSend(notificacionQueueConfig.getExchangeName(), notificacionQueueConfig.getRoutingKeyName(), cuerpoMensaje.get());
+        rabbitTemplate.convertAndSend(exchange, routingKey, cuerpoMensaje.get());
     }
 }
