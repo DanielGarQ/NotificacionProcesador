@@ -1,39 +1,22 @@
 package com.notificationprocessor.notificationprocessor.crossCutting.utils;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class UtilDate {
 
-    private static final String DEFAULT_VALUE_DATE_AS_STRING ="01/01/0001 00:00:00";
-    private static final String FORMAT_VALUE_DATE = "dd/MM/yyyy HH:mm:ss";
-    private static final Date DEFAULT_VALUE_DATE;
+    private static final String DEFAULT_VALUE_DATE_AS_STRING = "0001-01-01";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final LocalDate DEFAULT_VALUE_DATE;
 
     static {
-        try {
-            DEFAULT_VALUE_DATE = fromStringToDate(DEFAULT_VALUE_DATE_AS_STRING);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        DEFAULT_VALUE_DATE = LocalDate.parse(DEFAULT_VALUE_DATE_AS_STRING, FORMATTER);
     }
 
-
-    public static final Date fromStringToDate(final String dateValue) throws ParseException {
-        DateFormat format = new SimpleDateFormat(FORMAT_VALUE_DATE);
-        Date dateTime;
-        try {
-            dateTime = format.parse(dateValue);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
-        return dateTime;
+    public static LocalDate fromStringToLocalDate(final String dateValue) {
+        return LocalDate.parse(dateValue, FORMATTER);
     }
 
-    public static Date getDefaultValueDate(){
+    public static LocalDate getDefaultValueDate() {
         return DEFAULT_VALUE_DATE;
     }
 }

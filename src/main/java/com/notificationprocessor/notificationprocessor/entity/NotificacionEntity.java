@@ -1,7 +1,10 @@
 package com.notificationprocessor.notificationprocessor.entity;
 
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -24,13 +27,13 @@ public class NotificacionEntity {
     private String contenido;
 
     @Column(name = "fechacreacion")
-    private Date fechaCreacion;
+    private LocalDate fechaCreacion;
 
     @Column(name = "estado", length = 30)
     private String estado;
 
     @Column(name = "fechaprogramada")
-    private Date fechaProgramada;
+    private LocalDate fechaProgramada;
 
     @Column(name = "tipoEntrega", length = 30)
     private String tipoEntrega;
@@ -39,7 +42,7 @@ public class NotificacionEntity {
     @Column(name = "destinatario")
     private List<PersonaEntity> destinatario;
 
-    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
+    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, LocalDate fechaCreacion, String estado, LocalDate fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
         this.identificador = identificador;
         this.autor = autor;
         this.titulo = titulo;
@@ -70,7 +73,7 @@ public class NotificacionEntity {
         return contenido;
     }
 
-    public Date getFechaCreacion() {
+    public LocalDate getFechaCreacion() {
         return fechaCreacion;
     }
 
@@ -78,7 +81,7 @@ public class NotificacionEntity {
         return estado;
     }
 
-    public Date getFechaProgramada() {
+    public LocalDate getFechaProgramada() {
         return fechaProgramada;
     }
 
@@ -102,7 +105,7 @@ public class NotificacionEntity {
         this.contenido = contenido;
     }
 
-    public void setFechaCreacion(Date fechaCreacion) {
+    public void setFechaCreacion(LocalDate fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -110,7 +113,7 @@ public class NotificacionEntity {
         this.estado = estado;
     }
 
-    public void setFechaProgramada(Date fechaProgramada) {
+    public void setFechaProgramada(LocalDate fechaProgramada) {
         this.fechaProgramada = fechaProgramada;
     }
 

@@ -6,7 +6,9 @@ import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDa
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDefaultObject;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilText;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilUUID;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,9 +21,9 @@ public class NotificacionDomain {
     private PersonaDomain autor;
     private String titulo;
     private String contenido;
-    private Date fechaCreacion;
+    private LocalDate fechaCreacion;
     private String estado;
-    private Date fechaProgramada;
+    private LocalDate fechaProgramada;
     private String tipoEntrega;
 
     private List<PersonaDomain> destinatario;
@@ -39,7 +41,7 @@ public class NotificacionDomain {
         setDestinatario(new ArrayList<>());
     }
 
-    public NotificacionDomain(UUID identificador, PersonaDomain autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaDomain> destinatario) {
+    public NotificacionDomain(UUID identificador, PersonaDomain autor, String titulo, String contenido, LocalDate fechaCreacion, String estado, LocalDate fechaProgramada, String tipoEntrega, List<PersonaDomain> destinatario) {
         this.identificador = identificador;
         this.autor = autor;
         this.titulo = titulo;
@@ -56,7 +58,7 @@ public class NotificacionDomain {
     }
 
     public void setIdentificador(UUID identificador) {
-        this.identificador = (UUID) UtilDefaultObject.defaultValue(identificador,UtilUUID.getUuidDefaultValue());
+        this.identificador = identificador;
     }
 
     public PersonaDomain getAutor() {
@@ -64,7 +66,7 @@ public class NotificacionDomain {
     }
 
     public void setAutor(PersonaDomain autor) {
-        this.autor = (PersonaDomain) UtilDefaultObject.defaultValue(autor,new PersonaDomain());
+        this.autor = autor;
     }
 
     public String getTitulo() {
@@ -72,8 +74,7 @@ public class NotificacionDomain {
     }
 
     public void setTitulo(String titulo) {
-
-        this.titulo = (String) UtilDefaultObject.defaultValue(titulo,UtilText.getDefaultTextValue());
+        this.titulo = titulo;
     }
 
     public String getContenido() {
@@ -81,15 +82,15 @@ public class NotificacionDomain {
     }
 
     public void setContenido(String contenido) {
-        this.contenido = (String) UtilDefaultObject.defaultValue(contenido,UtilText.getDefaultTextValue());
+        this.contenido = contenido;
     }
 
-    public Date getFechaCreacion() {
+    public LocalDate getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = (Date) UtilDefaultObject.defaultValue(fechaCreacion,UtilDate.getDefaultValueDate());
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
 
     public String getEstado() {
@@ -97,15 +98,15 @@ public class NotificacionDomain {
     }
 
     public void setEstado(String estado) {
-        this.estado = (String) UtilDefaultObject.defaultValue(estado,UtilText.getDefaultTextValue());
+        this.estado = estado;
     }
 
-    public Date getFechaProgramada() {
+    public LocalDate getFechaProgramada() {
         return fechaProgramada;
     }
 
-    public void setFechaProgramada(Date fechaProgramada) {
-        this.fechaProgramada = (Date) UtilDefaultObject.defaultValue(fechaProgramada, UtilDate.getDefaultValueDate());
+    public void setFechaProgramada(LocalDate fechaProgramada) {
+        this.fechaProgramada = fechaProgramada;
     }
 
     public String getTipoEntrega() {
@@ -113,8 +114,7 @@ public class NotificacionDomain {
     }
 
     public void setTipoEntrega(String tipoEntrega) {
-
-        this.tipoEntrega = (String) UtilDefaultObject.defaultValue(tipoEntrega,UtilText.getDefaultTextValue());
+        this.tipoEntrega = tipoEntrega;
     }
 
     public List<PersonaDomain> getDestinatario() {
