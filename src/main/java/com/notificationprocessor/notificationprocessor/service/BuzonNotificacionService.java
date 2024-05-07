@@ -52,10 +52,10 @@ public class BuzonNotificacionService {
         return new BuzonNotificacionDomain(entity.getIdentificador(), propietario, entity.getNombre(), getNotificaciones(entity.getNotificaciones()));
     }
 
-    public UUID saveBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
+    public void saveBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
         var propietario = new PersonaEntity(buzonNotificacion.getPropietario().getIdentificador(), buzonNotificacion.getPropietario().getPrimerNombre(), buzonNotificacion.getPropietario().getSegundoNombre(), buzonNotificacion.getPropietario().getPrimerApellido(), buzonNotificacion.getPropietario().getSegundoApellido(), buzonNotificacion.getPropietario().getCorreoElectronico());
         var entity = new BuzonNotificacionEntity(buzonNotificacion.getIdentificador(), propietario, buzonNotificacion.getNombre(), getNotificacionesEntity(buzonNotificacion.getNotificaciones()));
-        return buzonNotificacionRepository.save(entity).getIdentificador();
+         buzonNotificacionRepository.save(entity);
     }
 
     private List<NotificacionEntity> getNotificacionesEntity(List<NotificacionDomain> notificaciones){

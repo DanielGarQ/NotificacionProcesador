@@ -1,6 +1,8 @@
 package com.notificationprocessor.notificationprocessor.service;
 
 
+import com.notificationprocessor.notificationprocessor.MessengerService.notificacion.MessageSenderNotificacion;
+import com.notificationprocessor.notificationprocessor.config.notificacionQueueConfig.NotificacionQueueConfigRespuesta;
 import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
 import com.notificationprocessor.notificationprocessor.domain.PersonaDomain;
 import com.notificationprocessor.notificationprocessor.entity.NotificacionEntity;
@@ -17,6 +19,11 @@ public class NotificacionService {
 
     @Autowired
     private NotificacionRepository notificacionRepository;
+
+    
+    private NotificacionQueueConfigRespuesta notificacionQueueConfigRespuesta;
+
+    private MessageSenderNotificacion messageSenderNotificacion;
 
     public List<NotificacionDomain> findAll(){
         return notificacionRepository.findAll().stream().map(new NotificacionService()::toDomain).toList();
@@ -50,6 +57,7 @@ public class NotificacionService {
     public void saveNotificacion(NotificacionDomain notificacion){
         var autor = new PersonaEntity(notificacion.getAutor().getIdentificador(), notificacion.getAutor().getPrimerNombre(), notificacion.getAutor().getSegundoNombre(), notificacion.getAutor().getPrimerApellido(), notificacion.getAutor().getSegundoApellido(), notificacion.getAutor().getCorreoElectronico());
         var entity = new NotificacionEntity(notificacion.getIdentificador(), autor, notificacion.getTitulo(), notificacion.getContenido(), notificacion.getFechaCreacion(), notificacion.getEstado(), notificacion.getFechaProgramada(), notificacion.getTipoEntrega(), notificacion.getDestinatario().stream().map(new NotificacionService()::personaToEntity).toList());
+      // messageSenderNotificacion.execute(notificacion, notificacionQueueConfigRespuesta.getExchangeName(), notificacionQueueConfigRespuesta.getRoutingKeyName(), "21");
         notificacionRepository.save(entity);
     }
 

@@ -22,10 +22,11 @@ public class ReciverMessageBuzonNotificacion {
         this.mapperJsonObjeto = mapperJsonObjeto;
     }
 
-   // @RabbitListener(queues = "")
+   //@RabbitListener(queues = "cola.buzon.crear")
     public void receiveMessageProcessClient(String message) {
+        var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {
-
+            buzonNotificacionService.saveBuzonNotificacion(mensajeRecibido);
         } catch (Exception e) {
             System.out.println(e);
         }

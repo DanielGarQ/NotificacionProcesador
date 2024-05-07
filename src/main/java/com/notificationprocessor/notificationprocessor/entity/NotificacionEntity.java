@@ -27,13 +27,13 @@ public class NotificacionEntity {
     private String contenido;
 
     @Column(name = "fechacreacion")
-    private LocalDate fechaCreacion;
+    private Date fechaCreacion;
 
     @Column(name = "estado", length = 30)
     private String estado;
 
     @Column(name = "fechaprogramada")
-    private LocalDate fechaProgramada;
+    private Date fechaProgramada;
 
     @Column(name = "tipoEntrega", length = 30)
     private String tipoEntrega;
@@ -42,7 +42,7 @@ public class NotificacionEntity {
     @Column(name = "destinatario")
     private List<PersonaEntity> destinatario;
 
-    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, LocalDate fechaCreacion, String estado, LocalDate fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
+    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
         this.identificador = identificador;
         this.autor = autor;
         this.titulo = titulo;
@@ -73,7 +73,7 @@ public class NotificacionEntity {
         return contenido;
     }
 
-    public LocalDate getFechaCreacion() {
+    public Date getFechaCreacion() {
         return fechaCreacion;
     }
 
@@ -81,7 +81,7 @@ public class NotificacionEntity {
         return estado;
     }
 
-    public LocalDate getFechaProgramada() {
+    public Date getFechaProgramada() {
         return fechaProgramada;
     }
 
@@ -105,7 +105,7 @@ public class NotificacionEntity {
         this.contenido = contenido;
     }
 
-    public void setFechaCreacion(LocalDate fechaCreacion) {
+    public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -113,7 +113,7 @@ public class NotificacionEntity {
         this.estado = estado;
     }
 
-    public void setFechaProgramada(LocalDate fechaProgramada) {
+    public void setFechaProgramada(Date fechaProgramada) {
         this.fechaProgramada = fechaProgramada;
     }
 

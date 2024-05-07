@@ -18,12 +18,10 @@ import java.util.Optional;
 @Component
 public class ReciverMesssageNotificacion {
 
+    @Autowired
     private final NotificacionService notificacionService = new NotificacionService();
 
-    @Autowired
     private final MapperJsonObjetoJackson mapperJsonObjeto;
-
-    @Autowired private ObjectMapper objectMapper;
 
     public ReciverMesssageNotificacion(MapperJsonObjetoJackson mapperJsonObjeto) {
         this.mapperJsonObjeto = mapperJsonObjeto;
@@ -32,15 +30,19 @@ public class ReciverMesssageNotificacion {
 
     @RabbitListener(queues = "cola.notificacion.crear")
     public void receiveMessageCrearNotificacion(String message) throws JsonProcessingException {
-       var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
+        System.out.println(message);
+
+        var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {
             System.out.println(mensajeRecibido);
         } catch (Exception e) {
             System.out.println(e);
         }
     }
-   //@RabbitListener(queues = "colaNotificacionConsultar")
+   @RabbitListener(queues = "cola.notificacion.consultar")
     public void receiveMessageConsultarNotificacion(String message) {
+       System.out.println(message);
+
        var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {
             System.out.println(mensajeRecibido);

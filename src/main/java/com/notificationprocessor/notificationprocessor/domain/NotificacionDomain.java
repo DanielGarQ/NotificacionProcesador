@@ -2,6 +2,7 @@ package com.notificationprocessor.notificationprocessor.domain;
 
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDate;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDefaultObject;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilText;
@@ -21,11 +22,12 @@ public class NotificacionDomain {
     private PersonaDomain autor;
     private String titulo;
     private String contenido;
-    private LocalDate fechaCreacion;
+    @JsonFormat(pattern="MMM DD, YYYY,'T'HH:mm:ss")
+    private Date fechaCreacion;
     private String estado;
-    private LocalDate fechaProgramada;
+    @JsonFormat(pattern="MMM DD, YYYY,'T'HH:mm:ss")
+    private Date fechaProgramada;
     private String tipoEntrega;
-
     private List<PersonaDomain> destinatario;
 
 
@@ -34,14 +36,12 @@ public class NotificacionDomain {
         setAutor(new PersonaDomain());
         setTitulo(UtilText.getDefaultTextValue());
         setContenido(UtilText.getDefaultTextValue());
-        setFechaCreacion(UtilDate.getDefaultValueDate());
         setEstado(UtilText.getDefaultTextValue());
-        setFechaProgramada(UtilDate.getDefaultValueDate());
         setTipoEntrega(UtilText.getDefaultTextValue());
         setDestinatario(new ArrayList<>());
     }
 
-    public NotificacionDomain(UUID identificador, PersonaDomain autor, String titulo, String contenido, LocalDate fechaCreacion, String estado, LocalDate fechaProgramada, String tipoEntrega, List<PersonaDomain> destinatario) {
+    public NotificacionDomain(UUID identificador, PersonaDomain autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaDomain> destinatario) {
         this.identificador = identificador;
         this.autor = autor;
         this.titulo = titulo;
@@ -85,11 +85,11 @@ public class NotificacionDomain {
         this.contenido = contenido;
     }
 
-    public LocalDate getFechaCreacion() {
+    public Date getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(LocalDate fechaCreacion) {
+    public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -101,11 +101,11 @@ public class NotificacionDomain {
         this.estado = estado;
     }
 
-    public LocalDate getFechaProgramada() {
+    public Date getFechaProgramada() {
         return fechaProgramada;
     }
 
-    public void setFechaProgramada(LocalDate fechaProgramada) {
+    public void setFechaProgramada(Date fechaProgramada) {
         this.fechaProgramada = fechaProgramada;
     }
 
