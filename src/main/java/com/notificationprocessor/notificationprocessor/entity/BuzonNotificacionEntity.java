@@ -10,6 +10,7 @@ import java.util.UUID;
 public class BuzonNotificacionEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "identificador")
     private UUID identificador;
 

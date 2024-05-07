@@ -8,6 +8,7 @@ import com.notificationprocessor.notificationprocessor.entity.BuzonNotificacionE
 import com.notificationprocessor.notificationprocessor.entity.NotificacionEntity;
 import com.notificationprocessor.notificationprocessor.entity.PersonaEntity;
 import com.notificationprocessor.notificationprocessor.repository.BuzonNotificacionRepository;
+import com.notificationprocessor.notificationprocessor.repository.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,8 +18,12 @@ import java.util.UUID;
 @Repository
 public class BuzonNotificacionService {
 
+
     @Autowired
     private BuzonNotificacionRepository buzonNotificacionRepository;
+
+    @Autowired
+    private PersonaRepository personaRepository;
 
     public List<BuzonNotificacionDomain> getBuzonNotificacionesPorPropietario(String correo){
         var entities = buzonNotificacionRepository.findAll();
@@ -53,8 +58,10 @@ public class BuzonNotificacionService {
     }
 
     public void saveBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
+
         var propietario = new PersonaEntity(buzonNotificacion.getPropietario().getIdentificador(), buzonNotificacion.getPropietario().getPrimerNombre(), buzonNotificacion.getPropietario().getSegundoNombre(), buzonNotificacion.getPropietario().getPrimerApellido(), buzonNotificacion.getPropietario().getSegundoApellido(), buzonNotificacion.getPropietario().getCorreoElectronico());
-        var entity = new BuzonNotificacionEntity(buzonNotificacion.getIdentificador(), propietario, buzonNotificacion.getNombre(), getNotificacionesEntity(buzonNotificacion.getNotificaciones()));
+        personaRepository.save(propietario);
+        var entity = new BuzonNotificacionEntity(buzonNotificacion.getIdentificador(),personaRepository.findBycorreoElectronico(propietario.getCorreoElectronico()),setNombreBuzon(propietario.getPrimerNombre()), getNotificacionesEntity(buzonNotificacion.getNotificaciones()));
          buzonNotificacionRepository.save(entity);
     }
 
@@ -75,5 +82,7 @@ public class BuzonNotificacionService {
         return new PersonaEntity(domain.getIdentificador(), domain.getPrimerNombre(), domain.getSegundoNombre(), domain.getPrimerApellido(), domain.getSegundoApellido(), domain.getCorreoElectronico());
     }
 
-
+    private String setNombreBuzon(String nombre){
+        return "Buzon de "+nombre;
+    }
 }

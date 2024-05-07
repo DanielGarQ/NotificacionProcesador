@@ -13,6 +13,7 @@ import java.util.Optional;
 @Component
 public class ReciverMessageBuzonNotificacion {
 
+    @Autowired
     private final BuzonNotificacionService buzonNotificacionService = new BuzonNotificacionService();
 
     @Autowired
@@ -22,7 +23,7 @@ public class ReciverMessageBuzonNotificacion {
         this.mapperJsonObjeto = mapperJsonObjeto;
     }
 
-   //@RabbitListener(queues = "cola.buzon.crear")
+   @RabbitListener(queues = "cola.buzon.crear")
     public void receiveMessageProcessClient(String message) {
         var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {

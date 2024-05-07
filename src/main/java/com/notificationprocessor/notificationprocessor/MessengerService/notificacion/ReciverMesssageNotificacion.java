@@ -28,7 +28,7 @@ public class ReciverMesssageNotificacion {
     }
 
 
-    @RabbitListener(queues = "cola.notificacion.crear")
+    //@RabbitListener(queues = "cola.notificacion.crear")
     public void receiveMessageCrearNotificacion(String message) throws JsonProcessingException {
         System.out.println(message);
 
@@ -39,7 +39,7 @@ public class ReciverMesssageNotificacion {
             System.out.println(e);
         }
     }
-   @RabbitListener(queues = "cola.notificacion.consultar")
+   //@RabbitListener(queues = "cola.notificacion.consultar")
     public void receiveMessageConsultarNotificacion(String message) {
        System.out.println(message);
 
