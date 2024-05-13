@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "notificacion")
 public class NotificacionEntity {
     @Id
-    @Column(name = "identificador")
+    @Column(name = "notificacion_identificador")
     private UUID identificador;
 
     @OneToOne
@@ -38,8 +38,12 @@ public class NotificacionEntity {
     @Column(name = "tipoEntrega", length = 30)
     private String tipoEntrega;
 
-    @OneToMany
-    @Column(name = "destinatario")
+    @ManyToMany
+    @JoinTable(
+            name = "destinatario_notificacion",
+            joinColumns = @JoinColumn(name = "notificacion_identificador"),
+            inverseJoinColumns = @JoinColumn(name = "identificador")
+    )
     private List<PersonaEntity> destinatario;
 
     public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {

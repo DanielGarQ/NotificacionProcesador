@@ -1,6 +1,9 @@
 package com.notificationprocessor.notificationprocessor.service;
 
 
+
+import com.notificationprocessor.notificationprocessor.MessengerService.buzonNotificacion.MessageSenderBuzonNotificacion;
+import com.notificationprocessor.notificationprocessor.config.buzonNotificacionQueueConfig.BuzonNotificacionQueueConfigLista;
 import com.notificationprocessor.notificationprocessor.domain.BuzonNotificacionDomain;
 import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
 import com.notificationprocessor.notificationprocessor.domain.PersonaDomain;
@@ -9,11 +12,17 @@ import com.notificationprocessor.notificationprocessor.entity.NotificacionEntity
 import com.notificationprocessor.notificationprocessor.entity.PersonaEntity;
 import com.notificationprocessor.notificationprocessor.repository.BuzonNotificacionRepository;
 import com.notificationprocessor.notificationprocessor.repository.PersonaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class BuzonNotificacionService {
@@ -24,11 +33,24 @@ public class BuzonNotificacionService {
 
     @Autowired
     private PersonaRepository personaRepository;
+    @Autowired
+    private MessageSenderBuzonNotificacion messageSenderBuzonNotificacion;
 
-    public List<BuzonNotificacionDomain> getBuzonNotificacionesPorPropietario(String correo){
+    @Autowired
+    private BuzonNotificacionQueueConfigLista buzonNotificacionQueueConfigLista;
+
+    @Transactional
+   public void getBuzonNotificacionesPorPropietario(BuzonNotificacionDomain buzonNotificacionDomain) {
         var entities = buzonNotificacionRepository.findAll();
-        var notificaciones = entities.stream().filter(notificacion->notificacion.getPropietario().getCorreoElectronico().equals(correo)).toList();
-        return notificaciones.stream().map(new BuzonNotificacionService()::getDomain).toList();
+        var notificaciones = entities.stream().filter(notificacion->notificacion.getPropietario().getCorreoElectronico().equals(buzonNotificacionDomain.getPropietario().getCorreoElectronico())).toList();
+        List<BuzonNotificacionDomain> buzon = notificaciones.stream().map(new BuzonNotificacionService()::getDomain).toList();
+        messageSenderBuzonNotificacion.execute(buzon, buzonNotificacionQueueConfigLista.getExchangeName(), buzonNotificacionQueueConfigLista.getRoutingKeyName(),"32");
+
+    }
+    @Transactional
+    public void getAll(){
+        List<BuzonNotificacionDomain> buzones = buzonNotificacionRepository.findAll().stream().map(new BuzonNotificacionService()::getDomain).toList();
+        messageSenderBuzonNotificacion.execute(buzones, buzonNotificacionQueueConfigLista.getExchangeName(), buzonNotificacionQueueConfigLista.getRoutingKeyName(),"32");
     }
 
     public BuzonNotificacionDomain getDomain(BuzonNotificacionEntity entity){
@@ -50,21 +72,19 @@ public class BuzonNotificacionService {
         return buzonNotificacionRepository.findAll().stream().map(new BuzonNotificacionService()::getDomain).toList();
     }
 
-    public BuzonNotificacionDomain findById(UUID identificador){
-        var entity = buzonNotificacionRepository.findById(identificador).orElse(null);
-        var propietario = new PersonaDomain(entity.getPropietario().getIdentificador(), entity.getPropietario().getPrimerNombre(), entity.getPropietario().getSegundoNombre(), entity.getPropietario().getPrimerApellido(), entity.getPropietario().getSegundoApellido(), entity.getPropietario().getCorreoElectronico());
-        assert entity != null;
-        return new BuzonNotificacionDomain(entity.getIdentificador(), propietario, entity.getNombre(), getNotificaciones(entity.getNotificaciones()));
-    }
-
     public void saveBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
-
         var propietario = new PersonaEntity(buzonNotificacion.getPropietario().getIdentificador(), buzonNotificacion.getPropietario().getPrimerNombre(), buzonNotificacion.getPropietario().getSegundoNombre(), buzonNotificacion.getPropietario().getPrimerApellido(), buzonNotificacion.getPropietario().getSegundoApellido(), buzonNotificacion.getPropietario().getCorreoElectronico());
         personaRepository.save(propietario);
         var entity = new BuzonNotificacionEntity(buzonNotificacion.getIdentificador(),personaRepository.findBycorreoElectronico(propietario.getCorreoElectronico()),setNombreBuzon(propietario.getPrimerNombre()), getNotificacionesEntity(buzonNotificacion.getNotificaciones()));
          buzonNotificacionRepository.save(entity);
     }
 
+    public void eliminarBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
+        PersonaDomain propietario = personaToDomain(personaRepository.findBycorreoElectronico(buzonNotificacion.getPropietario().getCorreoElectronico()));
+        buzonNotificacionRepository.deleteBypersonaIdentificador(propietario.getIdentificador());
+        personaRepository.deleteById(propietario.getIdentificador());
+
+    }
     private List<NotificacionEntity> getNotificacionesEntity(List<NotificacionDomain> notificaciones){
         return notificaciones.stream().map(new BuzonNotificacionService()::getNotificacionEntity).toList();
     }

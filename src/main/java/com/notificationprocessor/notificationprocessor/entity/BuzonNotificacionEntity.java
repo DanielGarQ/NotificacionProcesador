@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "buzonNotificacion")
+@Table(name = "buzon")
 public class BuzonNotificacionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "identificador")
+    @Column(name = "buzon_identificador")
     private UUID identificador;
 
     @OneToOne
@@ -21,15 +21,19 @@ public class BuzonNotificacionEntity {
     @Column(name = "nombre", length = 30)
     private String nombre;
 
-    @OneToMany
-    @JoinColumn(name = "notificaciones")
-    private List<NotificacionEntity> notificaciones;
+    @ManyToMany
+    @JoinTable(
+            name = "buzon_notificacion",
+            joinColumns = @JoinColumn(name = "buzon_identificador"),
+            inverseJoinColumns = @JoinColumn(name = "identificador")
+    )
+    private List<NotificacionEntity> buzon;
 
-    public BuzonNotificacionEntity(UUID identificador, PersonaEntity propietario, String nombre, List<NotificacionEntity> notificaciones) {
+    public BuzonNotificacionEntity(UUID identificador, PersonaEntity propietario, String nombre, List<NotificacionEntity> buzon) {
         this.identificador = identificador;
         this.propietario = propietario;
         this.nombre = nombre;
-        this.notificaciones = notificaciones;
+        this.buzon = buzon;
     }
 
     public BuzonNotificacionEntity() {
@@ -60,10 +64,10 @@ public class BuzonNotificacionEntity {
     }
 
     public List<NotificacionEntity> getNotificaciones() {
-        return notificaciones;
+        return buzon;
     }
 
     public void setNotificaciones(List<NotificacionEntity> notificaciones) {
-        this.notificaciones = notificaciones;
+        this.buzon = buzon;
     }
 }

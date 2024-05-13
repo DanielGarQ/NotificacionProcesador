@@ -10,10 +10,14 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.core.MessagePropertiesBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
 import java.util.Optional;
+@Configuration
 
-public class MessageSenderBuzonNotificacion implements MessageSender<BuzonNotificacionDomain> {
+public class MessageSenderBuzonNotificacion implements MessageSender<List<BuzonNotificacionDomain>> {
 
 
     @Autowired
@@ -47,7 +51,7 @@ public class MessageSenderBuzonNotificacion implements MessageSender<BuzonNotifi
 
 
     @Override
-    public void execute(BuzonNotificacionDomain message, String exchange, String routingKey, String idMessage) {
+    public void execute(List<BuzonNotificacionDomain> message, String exchange, String routingKey, String idMessage) {
         MessageProperties propiedadesMensaje = generarPropiedadesMensaje(Long.valueOf(idMessage));
 
         Optional<Message> cuerpoMensaje = obtenerCuerpoMensaje(message, propiedadesMensaje);
