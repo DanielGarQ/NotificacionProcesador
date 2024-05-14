@@ -11,15 +11,14 @@ import com.notificationprocessor.notificationprocessor.entity.BuzonNotificacionE
 import com.notificationprocessor.notificationprocessor.entity.NotificacionEntity;
 import com.notificationprocessor.notificationprocessor.entity.PersonaEntity;
 import com.notificationprocessor.notificationprocessor.repository.BuzonNotificacionRepository;
+import com.notificationprocessor.notificationprocessor.repository.NotificacionRepository;
 import com.notificationprocessor.notificationprocessor.repository.PersonaRepository;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -38,6 +37,8 @@ public class BuzonNotificacionService {
 
     @Autowired
     private BuzonNotificacionQueueConfigLista buzonNotificacionQueueConfigLista;
+    @Autowired
+    private NotificacionRepository notificacionRepository;
 
     @Transactional
    public void getBuzonNotificacionesPorPropietario(BuzonNotificacionDomain buzonNotificacionDomain) {
@@ -104,5 +105,20 @@ public class BuzonNotificacionService {
 
     private String setNombreBuzon(String nombre){
         return "Buzon de "+nombre;
+    }
+
+    @Transactional
+    public void enviarNotificacion(UUID id){
+        NotificacionEntity entity = notificacionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Notificación no encontrada"));
+        Hibernate.initialize(entity.getDestinatario());
+        enviarNotificacionABuzones(entity);
+    }
+
+    private void enviarNotificacionABuzones(NotificacionEntity entity) {
+        for (PersonaEntity personaEntity : entity.getDestinatario()){
+            var buzon = buzonNotificacionRepository.findByPropietario(personaEntity.getIdentificador());
+            buzonNotificacionRepository.saveBuzonNotificacion(buzon.getIdentificador(),entity.getIdentificador());
+        }
     }
 }

@@ -28,18 +28,16 @@ public class ReciverMesssageNotificacion {
     }
 
 
-    //@RabbitListener(queues = "cola.notificacion.crear")
+    @RabbitListener(queues = "cola.notificacion.crear")
     public void receiveMessageCrearNotificacion(String message) throws JsonProcessingException {
-        System.out.println(message);
-
         var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {
-            System.out.println(mensajeRecibido);
+            notificacionService.saveNotificacion(mensajeRecibido);
         } catch (Exception e) {
             System.out.println(e);
         }
     }
-   //@RabbitListener(queues = "cola.notificacion.consultar")
+   @RabbitListener(queues = "cola.notificacion.consultar")
     public void receiveMessageConsultarNotificacion(String message) {
        System.out.println(message);
 
@@ -51,7 +49,7 @@ public class ReciverMesssageNotificacion {
         }
     }
 
-   // @RabbitListener(queues = "colaNotificacionEliminar")
+    @RabbitListener(queues = "cola.notificacion.eliminar")
     public void receiveMessageEliminarNotificacion(String message) {
         var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {

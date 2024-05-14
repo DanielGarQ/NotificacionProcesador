@@ -16,7 +16,7 @@ public class NotificacionEntity {
     @Column(name = "notificacion_identificador")
     private UUID identificador;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "persona")
     private PersonaEntity autor;
 
@@ -27,13 +27,13 @@ public class NotificacionEntity {
     private String contenido;
 
     @Column(name = "fechacreacion")
-    private Date fechaCreacion;
+    private String fechaCreacion;
 
     @Column(name = "estado", length = 30)
     private String estado;
 
     @Column(name = "fechaprogramada")
-    private Date fechaProgramada;
+    private String fechaProgramada;
 
     @Column(name = "tipoEntrega", length = 30)
     private String tipoEntrega;
@@ -46,7 +46,7 @@ public class NotificacionEntity {
     )
     private List<PersonaEntity> destinatario;
 
-    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
+    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, String fechaCreacion, String estado, String fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
         this.identificador = identificador;
         this.autor = autor;
         this.titulo = titulo;
@@ -77,7 +77,7 @@ public class NotificacionEntity {
         return contenido;
     }
 
-    public Date getFechaCreacion() {
+    public String getFechaCreacion() {
         return fechaCreacion;
     }
 
@@ -85,7 +85,7 @@ public class NotificacionEntity {
         return estado;
     }
 
-    public Date getFechaProgramada() {
+    public String getFechaProgramada() {
         return fechaProgramada;
     }
 
@@ -109,7 +109,7 @@ public class NotificacionEntity {
         this.contenido = contenido;
     }
 
-    public void setFechaCreacion(Date fechaCreacion) {
+    public void setFechaCreacion(String fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -117,7 +117,7 @@ public class NotificacionEntity {
         this.estado = estado;
     }
 
-    public void setFechaProgramada(Date fechaProgramada) {
+    public void setFechaProgramada(String fechaProgramada) {
         this.fechaProgramada = fechaProgramada;
     }
 

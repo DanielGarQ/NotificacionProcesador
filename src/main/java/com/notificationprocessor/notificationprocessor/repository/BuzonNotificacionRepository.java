@@ -18,14 +18,20 @@ public interface BuzonNotificacionRepository extends JpaRepository<BuzonNotifica
     void deleteBypersonaIdentificador(UUID identificador);
 
 
+
     @Transactional
-    @Query(value = "SELECT b.buzon_identificador,b.nombre FROM buzon b WHERE b.persona = ?1",nativeQuery = true)
+    @Query(value = "SELECT b.buzon_identificador,b.nombre,b.persona FROM buzon b WHERE b.persona = ?1",nativeQuery = true)
     BuzonNotificacionEntity findByPropietario(UUID identificador);
 
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM buzon_notificacion b WHERE b.buzon_identificador = ?1",nativeQuery = true)
     void deleteIntermediaByBuzonIdentificador(UUID identificador);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO buzon_notificacion(buzon_identificador, identificador) VALUES (?1, ?2)",nativeQuery = true)
+    void saveBuzonNotificacion(UUID identificadorBuzon,UUID identificadorNotificacion);
 
 
 

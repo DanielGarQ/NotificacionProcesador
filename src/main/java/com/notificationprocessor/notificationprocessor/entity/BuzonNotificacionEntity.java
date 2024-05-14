@@ -21,19 +21,19 @@ public class BuzonNotificacionEntity {
     @Column(name = "nombre", length = 30)
     private String nombre;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "buzon_notificacion",
             joinColumns = @JoinColumn(name = "buzon_identificador"),
             inverseJoinColumns = @JoinColumn(name = "identificador")
     )
-    private List<NotificacionEntity> buzon;
+    private List<NotificacionEntity> persona;
 
-    public BuzonNotificacionEntity(UUID identificador, PersonaEntity propietario, String nombre, List<NotificacionEntity> buzon) {
+    public BuzonNotificacionEntity(UUID identificador, PersonaEntity propietario, String nombre, List<NotificacionEntity> persona) {
         this.identificador = identificador;
         this.propietario = propietario;
         this.nombre = nombre;
-        this.buzon = buzon;
+        this.persona = persona;
     }
 
     public BuzonNotificacionEntity() {
@@ -64,10 +64,10 @@ public class BuzonNotificacionEntity {
     }
 
     public List<NotificacionEntity> getNotificaciones() {
-        return buzon;
+        return persona;
     }
 
     public void setNotificaciones(List<NotificacionEntity> notificaciones) {
-        this.buzon = buzon;
+        this.persona = persona;
     }
 }
