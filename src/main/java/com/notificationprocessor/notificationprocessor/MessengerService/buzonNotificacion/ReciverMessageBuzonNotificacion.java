@@ -2,6 +2,7 @@ package com.notificationprocessor.notificationprocessor.MessengerService.buzonNo
 
 
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilEmail;
+import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilUUID;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjeto;
 import com.notificationprocessor.notificationprocessor.domain.BuzonNotificacionDomain;
 import com.notificationprocessor.notificationprocessor.service.BuzonNotificacionService;
@@ -37,7 +38,11 @@ public class ReciverMessageBuzonNotificacion {
     public void receiveMessageEliminar(String message) {
         var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
         try {
-            buzonNotificacionService.eliminarBuzonNotificacion(mensajeRecibido);
+            if(!mensajeRecibido.getIdentificador().equals(UtilUUID.getUuidDefaultValue())){
+                buzonNotificacionService.eliminarNotificacionDeBuzon(mensajeRecibido);
+            }else {
+                buzonNotificacionService.eliminarBuzonNotificacion(mensajeRecibido);
+            }
         } catch (Exception e) {
             System.out.println(e);
         }

@@ -33,6 +33,9 @@ public interface BuzonNotificacionRepository extends JpaRepository<BuzonNotifica
     @Query(value = "INSERT INTO buzon_notificacion(buzon_identificador, identificador) VALUES (?1, ?2)",nativeQuery = true)
     void saveBuzonNotificacion(UUID identificadorBuzon,UUID identificadorNotificacion);
 
-
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM buzon_notificacion b WHERE b.identificador = ?1",nativeQuery = true)
+    void deleteNotificacionDeBuzon(UUID identificador);
 
 }

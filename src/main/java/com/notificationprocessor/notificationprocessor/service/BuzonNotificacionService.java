@@ -16,6 +16,7 @@ import com.notificationprocessor.notificationprocessor.repository.PersonaReposit
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -86,6 +87,13 @@ public class BuzonNotificacionService {
         personaRepository.deleteById(propietario.getIdentificador());
 
     }
+    public void eliminarNotificacionDeBuzon(BuzonNotificacionDomain buzonNotificacion){
+        try {
+            eliminarNotificacion(buzonNotificacion.getNotificaciones());
+        }catch (JpaSystemException E){
+            //messasse sender;
+        }
+    }
     private List<NotificacionEntity> getNotificacionesEntity(List<NotificacionDomain> notificaciones){
         return notificaciones.stream().map(new BuzonNotificacionService()::getNotificacionEntity).toList();
     }
@@ -119,6 +127,15 @@ public class BuzonNotificacionService {
         for (PersonaEntity personaEntity : entity.getDestinatario()){
             var buzon = buzonNotificacionRepository.findByPropietario(personaEntity.getIdentificador());
             buzonNotificacionRepository.saveBuzonNotificacion(buzon.getIdentificador(),entity.getIdentificador());
+        }
+    }
+    private void eliminarNotificacion(List<NotificacionDomain> notificaciones){
+        try {
+            for (NotificacionDomain notificacion : notificaciones) {
+                buzonNotificacionRepository.deleteNotificacionDeBuzon(notificacion.getIdentificador());
+            }
+        }catch (JpaSystemException e){
+            throw e;
         }
     }
 }
