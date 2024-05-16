@@ -13,6 +13,7 @@ import com.notificationprocessor.notificationprocessor.entity.PersonaEntity;
 import com.notificationprocessor.notificationprocessor.repository.NotificacionRepository;
 import com.notificationprocessor.notificationprocessor.repository.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class NotificacionService {
 
     @Autowired
     private BuzonNotificacionService buzonNotificacionService;
+
 
     public List<NotificacionDomain> findAll(){
         return notificacionRepository.findAll().stream().map(new NotificacionService()::toDomain).toList();
@@ -69,7 +71,7 @@ public class NotificacionService {
         if(!UtilDate.isValidDate(notificacion.getFechaCreacion()) || !UtilDate.isValidDate(notificacion.getFechaProgramada())){
             throw new NoSuchElementException("Error, formato de fechas no valido");
         }
-        var entity = new NotificacionEntity(UtilUUID.newUuid(notificacionRepository), registroAutor(notificacion.getAutor()), notificacion.getTitulo(), notificacion.getContenido(), notificacion.getFechaCreacion(), notificacion.getEstado(), notificacion.getFechaProgramada(), notificacion.getTipoEntrega(),registroDestinatario(notificacion.getDestinatario()));
+        var entity = new NotificacionEntity(UtilUUID.newUuid(notificacionRepository), registroAutor(notificacion.getAutor()), notificacion.getTitulo(), notificacion.getContenido(), notificacion.getFechaCreacion(),EstadoNotificacion.Entregado.toString(), notificacion.getFechaProgramada(),TipoEntrega.Inmediata.toString(),registroDestinatario(notificacion.getDestinatario()));
         notificacionRepository.save(entity);
         buzonNotificacionService.enviarNotificacion(entity.getIdentificador());
     }

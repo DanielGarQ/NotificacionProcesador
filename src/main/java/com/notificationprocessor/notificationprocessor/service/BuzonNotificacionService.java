@@ -41,6 +41,9 @@ public class BuzonNotificacionService {
     @Autowired
     private NotificacionRepository notificacionRepository;
 
+
+
+
     @Transactional
    public void getBuzonNotificacionesPorPropietario(BuzonNotificacionDomain buzonNotificacionDomain) {
         var entities = buzonNotificacionRepository.findAll();
@@ -83,8 +86,10 @@ public class BuzonNotificacionService {
 
     public void eliminarBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
         PersonaDomain propietario = personaToDomain(personaRepository.findBycorreoElectronico(buzonNotificacion.getPropietario().getCorreoElectronico()));
-        buzonNotificacionRepository.deleteBypersonaIdentificador(propietario.getIdentificador());
-        personaRepository.deleteById(propietario.getIdentificador());
+        eliminarNotificacionUsuarioEliminado(propietario);//Primero se encarga de eliminar los registros de destinatario,de notificaciones enviadas y por ultimo de las notificaciones del usuario a eliminar
+        eliminarNotificacionesDeBuzon(propietario);//del buzon del usuario a eliminar borra todas las notificaciones que tenga ahi
+        buzonNotificacionRepository.deleteByPersonaIdentificador(propietario.getIdentificador());//borra el buzon del usuario a eliminar
+        personaRepository.deleteById(propietario.getIdentificador());//borra el usuario
 
     }
     public void eliminarNotificacionDeBuzon(BuzonNotificacionDomain buzonNotificacion){
@@ -92,6 +97,14 @@ public class BuzonNotificacionService {
             eliminarNotificacion(buzonNotificacion.getNotificaciones());
         }catch (JpaSystemException E){
             //messasse sender;
+        }
+    }
+    private void eliminarNotificacionesDeBuzon(PersonaDomain domain){
+        try{
+          var buzon =   buzonNotificacionRepository.findByPersona(domain.getIdentificador());
+          buzonNotificacionRepository.deleteIntermediaByBuzonIdentificador(buzon.getIdentificador());
+        }catch (JpaSystemException e){
+            throw e;
         }
     }
     private List<NotificacionEntity> getNotificacionesEntity(List<NotificacionDomain> notificaciones){
@@ -125,7 +138,7 @@ public class BuzonNotificacionService {
 
     private void enviarNotificacionABuzones(NotificacionEntity entity) {
         for (PersonaEntity personaEntity : entity.getDestinatario()){
-            var buzon = buzonNotificacionRepository.findByPropietario(personaEntity.getIdentificador());
+            var buzon = buzonNotificacionRepository.findByPersona(personaEntity.getIdentificador());
             buzonNotificacionRepository.saveBuzonNotificacion(buzon.getIdentificador(),entity.getIdentificador());
         }
     }
@@ -136,6 +149,38 @@ public class BuzonNotificacionService {
             }
         }catch (JpaSystemException e){
             throw e;
+        }
+    }
+//Metodos originales de notificacionService, se traen aca por error de circularidad de inyeccion de independencias
+    private void eliminarNotificacionUsuarioEliminado(PersonaDomain domain){
+        try{
+            eliminarDestinatario(domain);
+            eliminarNotificacionesEnBuzones(domain);
+            eliminarDestinatariosDeNotificaciones(domain);
+            notificacionRepository.eliminarNotificacionByAutor(domain.getIdentificador());
+        }catch (JpaSystemException e){
+            throw e;
+        }
+    }
+
+    private void eliminarDestinatario(PersonaDomain domain){
+        try {
+            notificacionRepository.eliminarDestinatarioById(domain.getIdentificador());
+        }catch (JpaSystemException e) {
+            throw e;
+        }
+    }
+
+    private void eliminarNotificacionesEnBuzones(PersonaDomain domain){
+        List<NotificacionEntity> notificacionesDeUsuarioAEliminar = notificacionRepository.findByAutor(domain.getIdentificador());
+        for(NotificacionEntity notificacion: notificacionesDeUsuarioAEliminar){
+            notificacionRepository.eliminarNotificacionDeBuzon(notificacion.getIdentificador());
+        }
+    }
+    private void eliminarDestinatariosDeNotificaciones(PersonaDomain domain){
+        List<NotificacionEntity> notificacionesDeUsuarioAEliminar = notificacionRepository.findByAutor(domain.getIdentificador());
+        for(NotificacionEntity notificacion: notificacionesDeUsuarioAEliminar){
+            notificacionRepository.eliminarDestinatarioByNotificacion(notificacion.getIdentificador());
         }
     }
 }
