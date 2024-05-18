@@ -22,9 +22,9 @@ public class NotificacionDomain {
     private PersonaDomain autor;
     private String titulo;
     private String contenido;
-    private String fechaCreacion;
+    private Date fechaCreacion;
     private String estado;
-    private String fechaProgramada;
+    private Date fechaProgramada;
     private String tipoEntrega;
 
     private List<PersonaDomain> destinatario;
@@ -34,15 +34,15 @@ public class NotificacionDomain {
         setIdentificador(UtilUUID.getUuidDefaultValue());
         setAutor(new PersonaDomain());
         setTitulo(UtilText.getDefaultTextValue());
-        setFechaCreacion(UtilDate.getDefaultValueDateAsString());
+        setFechaCreacion(UtilDate.getDefaultValueDate());
         setContenido(UtilText.getDefaultTextValue());
         setEstado(UtilText.getDefaultTextValue());
-        setFechaProgramada(UtilDate.getDefaultValueDateAsString());
+        setFechaProgramada(UtilDate.getDefaultValueDate());
         setTipoEntrega(UtilText.getDefaultTextValue());
         setDestinatario(new ArrayList<>());
     }
 
-    public NotificacionDomain(UUID identificador, PersonaDomain autor, String titulo, String contenido, String fechaCreacion, String estado, String fechaProgramada, String tipoEntrega, List<PersonaDomain> destinatario) {
+    public NotificacionDomain(UUID identificador, PersonaDomain autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaDomain> destinatario) {
         this.identificador = identificador;
         this.autor = autor;
         this.titulo = titulo;
@@ -87,12 +87,12 @@ public class NotificacionDomain {
         this.contenido = (String) UtilDefaultObject.defaultValue(contenido,UtilText.getDefaultTextValue());
     }
 
-    public String getFechaCreacion() {
+    public Date getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(String fechaCreacion) {
-        this.fechaCreacion = (String) UtilDefaultObject.defaultValue(fechaCreacion,UtilDate.getDefaultValueDateAsString());
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = (Date) UtilDefaultObject.defaultValue(fechaCreacion,UtilDate.getDefaultValueDateAsString());
     }
 
     public String getEstado() {
@@ -103,12 +103,12 @@ public class NotificacionDomain {
         this.estado = (String) UtilDefaultObject.defaultValue(estado,UtilText.getDefaultTextValue());
     }
 
-    public String getFechaProgramada() {
+    public Date getFechaProgramada() {
         return fechaProgramada;
     }
 
-    public void setFechaProgramada(String fechaProgramada) {
-        this.fechaProgramada = (String) UtilDefaultObject.defaultValue(fechaProgramada,UtilDate.getDefaultValueDateAsString());
+    public void setFechaProgramada(Date fechaProgramada) {
+        this.fechaProgramada = (Date) UtilDefaultObject.defaultValue(fechaProgramada,UtilDate.getDefaultValueDateAsString());
     }
 
     public String getTipoEntrega() {

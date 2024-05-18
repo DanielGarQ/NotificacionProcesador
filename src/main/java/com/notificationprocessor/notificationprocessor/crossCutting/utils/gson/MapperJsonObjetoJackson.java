@@ -44,7 +44,7 @@ public class MapperJsonObjetoJackson implements MapperJsonObjeto {
                             return LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                         }
                     })
-                    .create();
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
             String objeto = gson.toJson(objecto);
             return Optional.ofNullable(objeto);
         } catch (Exception e) {

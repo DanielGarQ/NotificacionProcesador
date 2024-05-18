@@ -27,13 +27,13 @@ public class NotificacionEntity {
     private String contenido;
 
     @Column(name = "fechacreacion")
-    private String fechaCreacion;
+    private Date fechaCreacion;
 
     @Column(name = "estado", length = 30)
     private String estado;
 
     @Column(name = "fechaprogramada")
-    private String fechaProgramada;
+    private Date fechaProgramada;
 
     @Column(name = "tipoEntrega", length = 30)
     private String tipoEntrega;
@@ -46,7 +46,7 @@ public class NotificacionEntity {
     )
     private List<PersonaEntity> destinatario;
 
-    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, String fechaCreacion, String estado, String fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
+    public NotificacionEntity(UUID identificador, PersonaEntity autor, String titulo, String contenido, Date fechaCreacion, String estado, Date fechaProgramada, String tipoEntrega, List<PersonaEntity> destinatario) {
         this.identificador = identificador;
         this.autor = autor;
         this.titulo = titulo;
@@ -77,7 +77,7 @@ public class NotificacionEntity {
         return contenido;
     }
 
-    public String getFechaCreacion() {
+    public Date getFechaCreacion() {
         return fechaCreacion;
     }
 
@@ -85,7 +85,7 @@ public class NotificacionEntity {
         return estado;
     }
 
-    public String getFechaProgramada() {
+    public Date getFechaProgramada() {
         return fechaProgramada;
     }
 
@@ -109,7 +109,7 @@ public class NotificacionEntity {
         this.contenido = contenido;
     }
 
-    public void setFechaCreacion(String fechaCreacion) {
+    public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -117,7 +117,7 @@ public class NotificacionEntity {
         this.estado = estado;
     }
 
-    public void setFechaProgramada(String fechaProgramada) {
+    public void setFechaProgramada(Date fechaProgramada) {
         this.fechaProgramada = fechaProgramada;
     }
 

@@ -2,6 +2,7 @@ package com.notificationprocessor.notificationprocessor.service;
 
 
 import com.notificationprocessor.notificationprocessor.MessengerService.notificacion.MessageSenderNotificacion;
+import com.notificationprocessor.notificationprocessor.MessengerService.respuesta.MessageRespuestaSenderBroker;
 import com.notificationprocessor.notificationprocessor.config.notificacionQueueConfig.NotificacionQueueConfigRespuesta;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDate;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilUUID;
@@ -27,7 +28,8 @@ public class NotificacionService {
     @Autowired
     private NotificacionRepository notificacionRepository;
 
-    
+
+    @Autowired
     private NotificacionQueueConfigRespuesta notificacionQueueConfigRespuesta;
 
     private MessageSenderNotificacion messageSenderNotificacion;
@@ -36,6 +38,9 @@ public class NotificacionService {
 
     @Autowired
     private BuzonNotificacionService buzonNotificacionService;
+
+    @Autowired
+    private MessageRespuestaSenderBroker messageRespuestaSenderBroker;
 
 
     public List<NotificacionDomain> findAll(){
@@ -68,9 +73,6 @@ public class NotificacionService {
     }
 
     public void saveNotificacion(NotificacionDomain notificacion){
-        if(!UtilDate.isValidDate(notificacion.getFechaCreacion()) || !UtilDate.isValidDate(notificacion.getFechaProgramada())){
-            throw new NoSuchElementException("Error, formato de fechas no valido");
-        }
         var entity = new NotificacionEntity(UtilUUID.newUuid(notificacionRepository), registroAutor(notificacion.getAutor()), notificacion.getTitulo(), notificacion.getContenido(), notificacion.getFechaCreacion(),EstadoNotificacion.Entregado.toString(), notificacion.getFechaProgramada(),TipoEntrega.Inmediata.toString(),registroDestinatario(notificacion.getDestinatario()));
         notificacionRepository.save(entity);
         buzonNotificacionService.enviarNotificacion(entity.getIdentificador());

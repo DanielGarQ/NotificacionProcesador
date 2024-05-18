@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "")
+@ConfigurationProperties(prefix = "respuesta.buzon")
 public class BuzonNotificacionQueueConfigRespuesta extends BuzonNotificacionQueueConfig{
 }

@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "notificacion.respuesta")
+@ConfigurationProperties(prefix = "respuesta.notificacion")
 public class NotificacionQueueConfigRespuesta extends NotificacionQueueConfig{
 }

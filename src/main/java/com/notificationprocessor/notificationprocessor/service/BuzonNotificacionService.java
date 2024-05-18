@@ -3,7 +3,9 @@ package com.notificationprocessor.notificationprocessor.service;
 
 
 import com.notificationprocessor.notificationprocessor.MessengerService.buzonNotificacion.MessageSenderBuzonNotificacion;
+import com.notificationprocessor.notificationprocessor.MessengerService.respuesta.MessageRespuestaSenderBroker;
 import com.notificationprocessor.notificationprocessor.config.buzonNotificacionQueueConfig.BuzonNotificacionQueueConfigLista;
+import com.notificationprocessor.notificationprocessor.config.buzonNotificacionQueueConfig.BuzonNotificacionQueueConfigRespuesta;
 import com.notificationprocessor.notificationprocessor.domain.BuzonNotificacionDomain;
 import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
 import com.notificationprocessor.notificationprocessor.domain.PersonaDomain;
@@ -38,9 +40,15 @@ public class BuzonNotificacionService {
 
     @Autowired
     private BuzonNotificacionQueueConfigLista buzonNotificacionQueueConfigLista;
+
+    @Autowired
+    private BuzonNotificacionQueueConfigRespuesta buzonNotificacionQueueConfigRespuesta;
+
+    @Autowired
+    private MessageRespuestaSenderBroker messageRespuestaSenderBroker;
+
     @Autowired
     private NotificacionRepository notificacionRepository;
-
 
 
 
@@ -82,6 +90,7 @@ public class BuzonNotificacionService {
         personaRepository.save(propietario);
         var entity = new BuzonNotificacionEntity(buzonNotificacion.getIdentificador(),personaRepository.findBycorreoElectronico(propietario.getCorreoElectronico()),setNombreBuzon(propietario.getPrimerNombre()), getNotificacionesEntity(buzonNotificacion.getNotificaciones()));
          buzonNotificacionRepository.save(entity);
+         messageRespuestaSenderBroker.execute("Buzon guardado con exito!!",buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
     }
 
     public void eliminarBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
@@ -90,13 +99,13 @@ public class BuzonNotificacionService {
         eliminarNotificacionesDeBuzon(propietario);//del buzon del usuario a eliminar borra todas las notificaciones que tenga ahi
         buzonNotificacionRepository.deleteByPersonaIdentificador(propietario.getIdentificador());//borra el buzon del usuario a eliminar
         personaRepository.deleteById(propietario.getIdentificador());//borra el usuario
-
+        messageRespuestaSenderBroker.execute("Buzon y propietario eliminado con exito!!!",buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
     }
     public void eliminarNotificacionDeBuzon(BuzonNotificacionDomain buzonNotificacion){
         try {
             eliminarNotificacion(buzonNotificacion.getNotificaciones());
         }catch (JpaSystemException E){
-            //messasse sender;
+            messageRespuestaSenderBroker.execute("Notificacion eliminada con exito!!",buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
         }
     }
     private void eliminarNotificacionesDeBuzon(PersonaDomain domain){
