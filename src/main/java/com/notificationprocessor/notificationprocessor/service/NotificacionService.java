@@ -74,8 +74,18 @@ public class NotificacionService {
 
     public void saveNotificacion(NotificacionDomain notificacion){
         var entity = new NotificacionEntity(UtilUUID.newUuid(notificacionRepository), registroAutor(notificacion.getAutor()), notificacion.getTitulo(), notificacion.getContenido(), notificacion.getFechaCreacion(),EstadoNotificacion.Entregado.toString(), notificacion.getFechaProgramada(),TipoEntrega.Inmediata.toString(),registroDestinatario(notificacion.getDestinatario()));
-        notificacionRepository.save(entity);
-        buzonNotificacionService.enviarNotificacion(entity.getIdentificador());
+        try{
+            notificacionRepository.save(entity);
+        }catch (JpaSystemException e){
+            System.out.println(e);
+        }
+        try {
+            buzonNotificacionService.enviarNotificacion(entity.getIdentificador());
+        }catch (NoSuchElementException e){
+            System.out.println(e);
+        }
+        messageRespuestaSenderBroker.execute("Notificacion Enviada con Exito!!!",notificacionQueueConfigRespuesta.getExchangeName(), notificacionQueueConfigRespuesta.getRoutingKeyName(), "330");
+
     }
 
     public void deleteNotificacion(UUID identificador){
