@@ -20,4 +20,8 @@ public class UtilMessagesServices {
         public static final String MENSAJE_NO_MAPEADO = "Mensaje recibido no pudo ser mapeado: {}";
 
     }
+
+    public static final class NotificacionService{
+        public static final String NOTIFICACION_NO_GUARDADA =  "Error al GUARDAR notificación: {}";
+    }
 }

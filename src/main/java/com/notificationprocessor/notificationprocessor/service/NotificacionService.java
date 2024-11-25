@@ -4,6 +4,7 @@ package com.notificationprocessor.notificationprocessor.service;
 import com.notificationprocessor.notificationprocessor.MessengerService.notificacion.MessageSenderNotificacion;
 import com.notificationprocessor.notificationprocessor.MessengerService.respuesta.MessageRespuestaSenderBroker;
 import com.notificationprocessor.notificationprocessor.config.notificacionQueueConfig.NotificacionQueueConfigRespuesta;
+import com.notificationprocessor.notificationprocessor.crossCutting.Messages.UtilMessagesServices;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDate;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilUUID;
 import com.notificationprocessor.notificationprocessor.domain.BuzonNotificacionDomain;
@@ -13,6 +14,8 @@ import com.notificationprocessor.notificationprocessor.entity.NotificacionEntity
 import com.notificationprocessor.notificationprocessor.entity.PersonaEntity;
 import com.notificationprocessor.notificationprocessor.repository.NotificacionRepository;
 import com.notificationprocessor.notificationprocessor.repository.PersonaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Repository;
@@ -25,6 +28,8 @@ import java.util.UUID;
 @Repository
 public class NotificacionService {
 
+    private static final Logger logger = LoggerFactory.getLogger(NotificacionService.class);
+
     @Autowired
     private NotificacionRepository notificacionRepository;
 
@@ -32,7 +37,6 @@ public class NotificacionService {
     @Autowired
     private NotificacionQueueConfigRespuesta notificacionQueueConfigRespuesta;
 
-    private MessageSenderNotificacion messageSenderNotificacion;
     @Autowired
     private PersonaRepository personaRepository;
 
@@ -62,10 +66,6 @@ public class NotificacionService {
         return new PersonaDomain(entity.getIdentificador(), entity.getPrimerNombre(), entity.getSegundoNombre(), entity.getPrimerApellido(), entity.getSegundoApellido(), entity.getCorreoElectronico());
     }
 
-    private PersonaEntity personaToEntity(PersonaDomain domain){
-        return new PersonaEntity(domain.getIdentificador(), domain.getPrimerNombre(), domain.getSegundoNombre(), domain.getPrimerApellido(), domain.getSegundoApellido(), domain.getCorreoElectronico());
-    }
-
     public NotificacionDomain findById(UUID identificador){
         var entity = notificacionRepository.findById(identificador).orElse(null);
         assert entity != null;
@@ -76,25 +76,20 @@ public class NotificacionService {
         var entity = new NotificacionEntity(UtilUUID.newUuid(notificacionRepository), registroAutor(notificacion.getAutor()), notificacion.getTitulo(), notificacion.getContenido(), notificacion.getFechaCreacion(),EstadoNotificacion.Entregado.toString(), notificacion.getFechaProgramada(),TipoEntrega.Inmediata.toString(),registroDestinatario(notificacion.getDestinatario()));
         try{
             notificacionRepository.save(entity);
-        }catch (JpaSystemException e){
-            System.out.println(e);
+        }catch (JpaSystemException exception){
+            logger.error(UtilMessagesServices.NotificacionService.NOTIFICACION_NO_GUARDADA, exception.getMessage(), exception);
         }
         try {
             buzonNotificacionService.enviarNotificacion(entity.getIdentificador());
-        }catch (NoSuchElementException e){
-            System.out.println(e);
+        }catch (NoSuchElementException exception){
+            logger.error(UtilMessagesServices.NotificacionService.NOTIFICACION_NO_GUARDADA, exception.getMessage(), exception);
         }
         messageRespuestaSenderBroker.execute("Notificacion Enviada con Exito!!!",notificacionQueueConfigRespuesta.getExchangeName(), notificacionQueueConfigRespuesta.getRoutingKeyName(), "330");
 
     }
 
-    public void deleteNotificacion(UUID identificador){
-        notificacionRepository.deleteById(identificador);
-    }
-
     private PersonaEntity registroAutor(PersonaDomain autor){
-        var autorEntity = personaRepository.findBycorreoElectronico(autor.getCorreoElectronico());
-        return autorEntity;
+        return personaRepository.findBycorreoElectronico(autor.getCorreoElectronico());
     }
 
     private List<PersonaEntity> registroDestinatario(List<PersonaDomain> destinatarios){
