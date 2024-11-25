@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public class UtilUUID {
-   private final static String uuidString = "ffffffff-ffff-ffff-ffff-ffffffffffff";
-   private final static UUID uuidDefaultValue = UUID.fromString(uuidString);
+   private final static String UUID_STRING = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+   private final static UUID UUID_DEFAULT_VALUE = UUID.fromString(UUID_STRING);
 
 
     private UtilUUID() {
@@ -14,11 +14,11 @@ public class UtilUUID {
     }
 
     public static String getUuidString() {
-        return uuidString;
+        return UUID_STRING;
     }
 
     public static  UUID getUuidDefaultValue() {
-        return uuidDefaultValue;
+        return UUID_DEFAULT_VALUE;
     }
 
     public static UUID newUuid(JpaRepository repository){

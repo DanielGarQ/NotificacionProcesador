@@ -1,15 +1,11 @@
 package com.notificationprocessor.notificationprocessor.domain;
 
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDate;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilDefaultObject;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilText;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.UtilUUID;
-import org.springframework.cglib.core.Local;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

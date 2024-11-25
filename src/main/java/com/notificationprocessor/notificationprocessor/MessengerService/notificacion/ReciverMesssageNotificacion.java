@@ -1,22 +1,22 @@
 package com.notificationprocessor.notificationprocessor.MessengerService.notificacion;
 
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjeto;
+import com.notificationprocessor.notificationprocessor.crossCutting.Messages.UtilMessagesServices;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjetoJackson;
 import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
-import com.notificationprocessor.notificationprocessor.entity.NotificacionEntity;
 import com.notificationprocessor.notificationprocessor.service.NotificacionService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class ReciverMesssageNotificacion {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReciverMesssageNotificacion.class);
 
     @Autowired
     private final NotificacionService notificacionService = new NotificacionService();
@@ -29,34 +29,18 @@ public class ReciverMesssageNotificacion {
 
 
     @RabbitListener(queues = "cola.notificacion.crear")
-    public void receiveMessageCrearNotificacion(String message) throws JsonProcessingException {
-        var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
-        try {
-            notificacionService.saveNotificacion(mensajeRecibido);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-   @RabbitListener(queues = "cola.notificacion.consultar")
-    public void receiveMessageConsultarNotificacion(String message) {
-       System.out.println(message);
-
-       var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
-        try {
-            System.out.println(mensajeRecibido);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    @RabbitListener(queues = "cola.notificacion.eliminar")
-    public void receiveMessageEliminarNotificacion(String message) {
-        var mensajeRecibido = obtenerObjetoDeMensaje(message).get();
-        try {
-           System.out.println(mensajeRecibido);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+    public void receiveMessageCrearNotificacion(String message) {
+        obtenerObjetoDeMensaje(message).ifPresentOrElse(
+                mensajeRecibido -> {
+                    try {
+                        notificacionService.saveNotificacion(mensajeRecibido);
+                        logger.info(UtilMessagesServices.ReciverMessageNotificacion.NOTIFICACION_GUARDADA);
+                    } catch (Exception exception) {
+                        logger.error(UtilMessagesServices.ReciverMessageNotificacion.NOTIFICACION_NO_GUARDADA, exception.getMessage(), exception);
+                    }
+                },
+                () -> logger.warn(UtilMessagesServices.ReciverMessageNotificacion.MENSAJE_NO_MAPEADO, message)
+        );
     }
 
     private Optional<NotificacionDomain> obtenerObjetoDeMensaje(String mensaje) {

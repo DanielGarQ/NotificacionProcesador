@@ -67,7 +67,4 @@ public class BuzonNotificacionEntity {
         return persona;
     }
 
-    public void setNotificaciones(List<NotificacionEntity> notificaciones) {
-        this.persona = persona;
-    }
 }

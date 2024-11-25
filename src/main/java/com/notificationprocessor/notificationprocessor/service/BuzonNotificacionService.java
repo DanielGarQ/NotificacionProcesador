@@ -1,11 +1,11 @@
 package com.notificationprocessor.notificationprocessor.service;
 
 
-
 import com.notificationprocessor.notificationprocessor.MessengerService.buzonNotificacion.MessageSenderBuzonNotificacion;
 import com.notificationprocessor.notificationprocessor.MessengerService.respuesta.MessageRespuestaSenderBroker;
 import com.notificationprocessor.notificationprocessor.config.buzonNotificacionQueueConfig.BuzonNotificacionQueueConfigLista;
 import com.notificationprocessor.notificationprocessor.config.buzonNotificacionQueueConfig.BuzonNotificacionQueueConfigRespuesta;
+import com.notificationprocessor.notificationprocessor.crossCutting.Messages.UtilMessagesServices;
 import com.notificationprocessor.notificationprocessor.domain.BuzonNotificacionDomain;
 import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
 import com.notificationprocessor.notificationprocessor.domain.PersonaDomain;
@@ -21,14 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Repository
 public class BuzonNotificacionService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BuzonNotificacionService.class);
 
     @Autowired
     private BuzonNotificacionRepository buzonNotificacionRepository;
@@ -90,7 +92,7 @@ public class BuzonNotificacionService {
         personaRepository.save(propietario);
         var entity = new BuzonNotificacionEntity(buzonNotificacion.getIdentificador(),personaRepository.findBycorreoElectronico(propietario.getCorreoElectronico()),setNombreBuzon(propietario.getPrimerNombre()), getNotificacionesEntity(buzonNotificacion.getNotificaciones()));
          buzonNotificacionRepository.save(entity);
-         messageRespuestaSenderBroker.execute("Buzon guardado con exito!!",buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
+         messageRespuestaSenderBroker.execute(UtilMessagesServices.BuzonNotificacionService.BUZON_GUARDADO,buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
     }
 
     public void eliminarBuzonNotificacion(BuzonNotificacionDomain buzonNotificacion){
@@ -99,21 +101,21 @@ public class BuzonNotificacionService {
         eliminarNotificacionesDeBuzon(propietario);//del buzon del usuario a eliminar borra todas las notificaciones que tenga ahi
         buzonNotificacionRepository.deleteByPersonaIdentificador(propietario.getIdentificador());//borra el buzon del usuario a eliminar
         personaRepository.deleteById(propietario.getIdentificador());//borra el usuario
-        messageRespuestaSenderBroker.execute("Buzon y propietario eliminado con exito!!!",buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
+        messageRespuestaSenderBroker.execute(UtilMessagesServices.BuzonNotificacionService.BUZON_NOTIFICACION_ELIMINADO,buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
     }
     public void eliminarNotificacionDeBuzon(BuzonNotificacionDomain buzonNotificacion){
         try {
             eliminarNotificacion(buzonNotificacion.getNotificaciones());
         }catch (JpaSystemException E){
-            messageRespuestaSenderBroker.execute("Notificacion eliminada con exito!!",buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
+            messageRespuestaSenderBroker.execute(UtilMessagesServices.BuzonNotificacionService.NOTIFICACION_ELIMINADA,buzonNotificacionQueueConfigRespuesta.getExchangeName(),buzonNotificacionQueueConfigRespuesta.getRoutingKeyName(),"2323");
         }
     }
-    private void eliminarNotificacionesDeBuzon(PersonaDomain domain){
+    private void eliminarNotificacionesDeBuzon(PersonaDomain domain) {
         try{
           var buzon =   buzonNotificacionRepository.findByPersona(domain.getIdentificador());
           buzonNotificacionRepository.deleteIntermediaByBuzonIdentificador(buzon.getIdentificador());
-        }catch (JpaSystemException e){
-            throw e;
+        } catch (JpaSystemException exception){
+            logger.error(UtilMessagesServices.BuzonNotificacionService.NOTIFICACION_NO_ELIMINADA, exception.getMessage(), exception);
         }
     }
     private List<NotificacionEntity> getNotificacionesEntity(List<NotificacionDomain> notificaciones){
@@ -156,8 +158,8 @@ public class BuzonNotificacionService {
             for (NotificacionDomain notificacion : notificaciones) {
                 buzonNotificacionRepository.deleteNotificacionDeBuzon(notificacion.getIdentificador());
             }
-        }catch (JpaSystemException e){
-            throw e;
+        }catch (JpaSystemException exception){
+            logger.error(UtilMessagesServices.BuzonNotificacionService.NOTIFICACION_NO_ELIMINADA, exception.getMessage(), exception);
         }
     }
 //Metodos originales de notificacionService, se traen aca por error de circularidad de inyeccion de independencias
@@ -167,16 +169,16 @@ public class BuzonNotificacionService {
             eliminarNotificacionesEnBuzones(domain);
             eliminarDestinatariosDeNotificaciones(domain);
             notificacionRepository.eliminarNotificacionByAutor(domain.getIdentificador());
-        }catch (JpaSystemException e){
-            throw e;
+        } catch (JpaSystemException exception){
+            logger.error(UtilMessagesServices.BuzonNotificacionService.NOTIFICACION_NO_ELIMINADA, exception.getMessage(), exception);
         }
     }
 
     private void eliminarDestinatario(PersonaDomain domain){
         try {
             notificacionRepository.eliminarDestinatarioById(domain.getIdentificador());
-        }catch (JpaSystemException e) {
-            throw e;
+        } catch (JpaSystemException exception){
+            logger.error(UtilMessagesServices.BuzonNotificacionService.DESTINATARIO_NO_ELIMINADO, exception.getMessage(), exception);
         }
     }
 

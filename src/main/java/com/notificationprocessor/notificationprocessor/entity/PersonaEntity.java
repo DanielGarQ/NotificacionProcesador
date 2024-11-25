@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
-
-import static net.sf.jsqlparser.util.validation.metadata.NamedObject.role;
 
 @Entity
 @Data

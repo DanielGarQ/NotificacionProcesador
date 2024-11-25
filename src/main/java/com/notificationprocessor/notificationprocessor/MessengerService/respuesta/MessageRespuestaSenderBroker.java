@@ -2,7 +2,6 @@ package com.notificationprocessor.notificationprocessor.MessengerService.respues
 
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.MessageSender;
 import com.notificationprocessor.notificationprocessor.crossCutting.utils.gson.MapperJsonObjeto;
-import com.notificationprocessor.notificationprocessor.domain.NotificacionDomain;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageProperties;
@@ -10,7 +9,6 @@ import org.springframework.amqp.core.MessagePropertiesBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.MessageHeaders;
 
 import java.util.Optional;
 @Configuration
